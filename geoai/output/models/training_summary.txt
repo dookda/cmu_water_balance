@@ -1,0 +1,5 @@
+Training completed on: 2025-06-24 08:03:24
+Total epochs: 10
+Best validation IoU: 0.8019
+Final validation IoU: 0.8019
+Final validation loss: inf
