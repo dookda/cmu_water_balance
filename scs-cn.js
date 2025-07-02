@@ -38,11 +38,11 @@ Map.addLayer(lulc, lulcVisParams, 'ESA WorldCover LULC');
 Map.addLayer(soilTexture, { min: 1, max: 12, palette: ['d5c36b', 'b96947', '9d3722', '74281a'] }, 'Soil Texture');
 
 var precipitationVis = {
-    min: 0,
-    max: 1,
+    min: 500,
+    max: 1800,
     palette: ['001137', '0aab1e', 'e7eb05', 'ff4a2d', 'e90000'],
 };
-Map.addLayer(precipitation.median().clip(aoi), precipitationVis, 'Precipitation');
+Map.addLayer(precipitation.sum().clip(aoi), precipitationVis, 'Precipitation');
 
 // Part 2: พารามิเตอร์ทางอุทกวิทยา
 // 2.1 สร้างแผนที่กลุ่มดิน HSG (Hydrologic Soil Group)

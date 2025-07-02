@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GISTDA WMS Layer in Leaflet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .header p {
+            margin: 5px 0 0 0;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+
+        .controls {
+            padding: 20px;
+            background: #ecf0f1;
+            border-top: 1px solid #bdc3c7;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .control-group input,
+        .control-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn.secondary {
+            background: #95a5a6;
+        }
+
+        .btn.secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .info {
+            background: #e8f6f3;
+            border: 1px solid #16a085;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .info h3 {
+            margin: 0 0 10px 0;
+            color: #16a085;
+        }
+
+        .info code {
+            background: #34495e;
+            color: #ecf0f1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>GISTDA WMS Layer in Leaflet</h1>
+            <p>Vallaris Legacy Maps Services - VIIRS Fire Detection Data</p>
+        </div>
+
+        <div id="map"></div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="opacity">Layer Opacity:</label>
+                <input type="range" id="opacity" min="0" max="1" step="0.1" value="0.8">
+                <span id="opacityValue">0.8</span>
+            </div>
+
+            <div class="control-group">
+                <label for="format">Image Format:</label>
+                <select id="format">
+                    <option value="image/png">PNG (Transparent)</option>
+                    <option value="image/jpeg">JPEG</option>
+                </select>
+            </div>
+
+            <button class="btn" onclick="toggleLayer()">Toggle WMS Layer</button>
+            <button class="btn secondary" onclick="fitBounds()">Fit to Thailand</button>
+            <button class="btn secondary" onclick="resetView()">Reset View</button>
+
+            <div class="info">
+                <h3>WMS Service Information</h3>
+                <p><strong>Service:</strong> Vallaris Legacy Maps Services</p>
+                <p><strong>Layer:</strong> <code>66c9a4cf1096e529d686a3d2</code> (Vallaris Blank)</p>
+                <p><strong>Data Source:</strong> VIIRS 3-day Fire Detection</p>
+                <p><strong>Supported Projections:</strong> EPSG:4326, EPSG:3857, EPSG:900913, EPSG:32647, EPSG:32648</p>
+                <p><strong>Coverage:</strong> Global (-180° to 180°, -85° to 85°)</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script>
+        // Initialize the map centered on Thailand
+        const map = L.map('map').setView([13.736717, 100.523186], 6);
+
+        // Add base map layers
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        });
+
+        const satelliteLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenTopoMap contributors'
+        });
+
+        // Add base layers to map
+        osmLayer.addTo(map);
+
+        // WMS layer configuration
+        const wmsUrl = 'https://api-gateway.gistda.or.th/api/2.0/resources/maps/viirs/3days/wms';
+        const wmsParams = {
+            layers: '66c9a4cf1096e529d686a3d2', // Vallaris Blank layer
+            format: 'image/png',
+            transparent: true,
+            version: '1.1.1',
+            crs: L.CRS.EPSG4326,
+            api_key: 'F773c1pYJ8YhvFzQx7BELoDi5Ah2n0UcxWOWmJsVRO0IemndHHzSECgSwXFbabUP'
+        };
+
+        // Create WMS layer
+        let wmsLayer = L.tileLayer.wms(wmsUrl, wmsParams);
+        wmsLayer.addTo(map);
+
+        // Layer control
+        const baseLayers = {
+            "OpenStreetMap": osmLayer,
+            "Topographic": satelliteLayer
+        };
+
+        const overlayLayers = {
+            "VIIRS Fire Detection": wmsLayer
+        };
+
+        L.control.layers(baseLayers, overlayLayers).addTo(map);
+
+        // Control functions
+        function toggleLayer() {
+            if (map.hasLayer(wmsLayer)) {
+                map.removeLayer(wmsLayer);
+            } else {
+                map.addLayer(wmsLayer);
+            }
+        }
+
+        function fitBounds() {
+            // Fit to Thailand bounds
+            const thailandBounds = [[5.61, 97.34], [20.46, 105.64]];
+            map.fitBounds(thailandBounds);
+        }
+
+        function resetView() {
+            map.setView([13.736717, 100.523186], 6);
+        }
+
+        // Opacity control
+        const opacitySlider = document.getElementById('opacity');
+        const opacityValue = document.getElementById('opacityValue');
+
+        opacitySlider.addEventListener('input', function () {
+            const opacity = parseFloat(this.value);
+            wmsLayer.setOpacity(opacity);
+            opacityValue.textContent = opacity;
+        });
+
+        // Format control
+        const formatSelect = document.getElementById('format');
+        formatSelect.addEventListener('change', function () {
+            const newFormat = this.value;
+
+            // Remove current layer
+            map.removeLayer(wmsLayer);
+
+            // Create new layer with updated format
+            wmsParams.format = newFormat;
+            wmsParams.transparent = newFormat === 'image/png';
+
+            wmsLayer = L.tileLayer.wms(wmsUrl, wmsParams);
+            wmsLayer.addTo(map);
+
+            // Apply current opacity
+            wmsLayer.setOpacity(parseFloat(opacitySlider.value));
+        });
+
+        // Add click event to get feature info (if supported)
+        map.on('click', function (e) {
+            const latlng = e.latlng;
+            console.log('Clicked at:', latlng.lat, latlng.lng);
+
+            // You could implement GetFeatureInfo request here
+            // const featureInfoUrl = wmsUrl + '?' + L.Util.getParamString({
+            //     service: 'WMS',
+            //     version: '1.1.1',
+            //     request: 'GetFeatureInfo',
+            //     layers: wmsParams.layers,
+            //     query_layers: wmsParams.layers,
+            //     format: 'image/png',
+            //     info_format: 'application/json',
+            //     width: 256,
+            //     height: 256,
+            //     x: Math.floor(e.containerPoint.x),
+            //     y: Math.floor(e.containerPoint.y),
+            //     bbox: map.getBounds().toBBoxString(),
+            //     crs: 'EPSG:4326',
+            //     api_key: wmsParams.api_key
+            // });
+        });
+
+        // Add scale control
+        L.control.scale().addTo(map);
+
+        // Add coordinates display
+        const coordsDiv = L.control({ position: 'bottomright' });
+        coordsDiv.onAdd = function (map) {
+            const div = L.DomUtil.create('div', 'coords-control');
+            div.style.background = 'rgba(255,255,255,0.8)';
+            div.style.padding = '5px';
+            div.style.borderRadius = '3px';
+            div.style.fontSize = '12px';
+            div.innerHTML = 'Move mouse over map';
+            return div;
+        };
+        coordsDiv.addTo(map);
+
+        map.on('mousemove', function (e) {
+            const coords = document.querySelector('.coords-control');
+            if (coords) {
+                coords.innerHTML = `Lat: ${e.latlng.lat.toFixed(6)}, Lng: ${e.latlng.lng.toFixed(6)}`;
+            }
+        });
+    </script>
+</body>
+
+</html>
