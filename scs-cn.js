@@ -1,7 +1,7 @@
 // Part 1: ตั้งค่าพื้นฐานและข้อมูลนำเข้า
 // 1.1 กำหนดขอบเขตพื้นที่ศึกษา (Area of Interest - AOI)
 // ตัวอย่าง: สี่เหลี่ยมครอบคลุมจังหวัดเชียงใหม่ แนะนำให้เปลี่ยนเป็นขอบเขตลุ่มน้ำจริง (เช่น จาก shapefile)
-var aoi = ee.Geometry.Rectangle([98.5, 18.0, 99.5, 19.5]);
+// var aoi = ee.Geometry.Rectangle([98.5, 18.0, 99.5, 19.5]);
 Map.centerObject(aoi, 9);
 
 // 1.2 กำหนดช่วงเวลาที่ศึกษา
@@ -170,3 +170,4 @@ var animationParams = {
     dimensions: 512
 };
 // print(runoffCollection.select('runoff_mm').getVideoThumbURL(animationParams));
+
