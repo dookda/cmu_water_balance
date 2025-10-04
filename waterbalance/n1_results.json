@@ -1,0 +1,30 @@
+{
+  "metrics": {
+    "RMSE": 120.64800204863161,
+    "MAE": 97.5120620814732,
+    "R\u00b2": 0.7533909703690398,
+    "NSE": 0.7533909703690398,
+    "PBIAS": -3.272694360818014,
+    "RSR": 0.4965974523001102,
+    "KGE": 0.6231507391527242,
+    "Volume_Error": 3.272686755096293
+  },
+  "top_features": [
+    "precipitation",
+    "runoff_lag_12",
+    "runoff_lag_1",
+    "precip_et_diff",
+    "soil_moisture",
+    "et_7d_mean",
+    "et",
+    "precip_30d_sum",
+    "ndvi",
+    "runoff_lag_6",
+    "lst",
+    "precip_7d_sum"
+  ],
+  "train_period": "2016-06-01 00:00:00 to 2021-12-01 00:00:00",
+  "test_period": "2022-01-01 00:00:00 to 2024-12-01 00:00:00",
+  "train_size": 67,
+  "test_size": 35
+}
