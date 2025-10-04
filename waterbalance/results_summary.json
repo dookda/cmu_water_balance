@@ -1,0 +1,7 @@
+{
+  "metrics": "{'RMSE': np.float64(1.4021693723703819), 'MAE': np.float64(0.915737235126486), 'R\u00b2': 0.5495404319600572, 'NSE': np.float64(0.5495404319600572), 'MAPE': np.float64(18.835100706735318), 'Correlation': np.float64(0.751787811978298)}",
+  "top_features": "['precip_et_diff', 'season', 'day_of_year', 'precip_30d_sum', 'precip_7d_sum', 'precipitation', 'ndvi', 'et', 'et_7d_mean', 'lst', 'runoff_lag_1', 'runoff_lag_3']",
+  "data_shape": "(3931, 13)",
+  "train_size": "3144",
+  "test_size": "787"
+}
